@@ -1,0 +1,183 @@
+版本控制系统的出现
+  在人们多次修改一个文件,而想记录每次的修改时,不得不创建文件。
+
+分布式版本控制系统
+1.相比svn这种集中式,每次必须联网提交数据给中央服务器，而分布式没一台机器都有一个完整的版本，修改可以直接保存在本地。
+
+第一步 创建版本库
+$ mkdir learngit
+$ cd learngit
+$ pwd
+/Users/michael/learngit
+
+pwd命令用于显示当前目录。在我的Mac上，这个仓库位于/Users/michael/learngit。
+
+
+
+第二步，通过git init命令把这个目录变成Git可以管理的仓库：
+
+$ git init
+Initialized empty Git repository in /Users/michael/learngit/.git/
+
+瞬间Git就把仓库建好了，而且告诉你是一个空的仓库（empty Git repository），细心的读者可以发现当前目录下多了一个.git的目录，这个目录是Git来跟踪管理版本库的，没事千万不要手动修改这个目录里面的文件，不然改乱了，就把Git仓库给破坏了。
+
+如果你没有看到.git目录，那是因为这个目录默认是隐藏的，用ls -ah命令就可以看见。
+初始化一个Git仓库，使用git init命令。
+
+
+小结:
+添加文件到Git仓库，分两步：
+  1.，使用命令git add <file>，注意，可反复多次使用，添加多个文件；
+  2.，使用命令$ git commit -m "add distributed"，完成。
+
+
+第三步  查看工作区的状态
+ 小结：要随时掌握工作区的状态，使用git status命令。
+
+如果git status告诉你有文件被修改过，用git diff可以查看修改内容。
+
+
+第四部 版本回退
+当然了，在实际工作中，我们脑子里怎么可能记得一个几千行的文件每次都改了什么内容，不然要版本控制系统干什么。版本控制系统肯定有某个命令可以告诉我们历史记录，在Git中，我们用git log命令查看：（git log命令显示从最近到最远的提交日志，我们可以看到3次提交，最近的一次是append GPL，上一次是add distributed，最早的一次是wrote a readme file。
+如果嫌输出信息太多，看得眼花缭乱的，可以试试加上--pretty=oneline参数：）
+
+好了，现在我们启动时光穿梭机，准备把readme.txt回退到上一个版本，也就是“add distributed”的那个版本，怎么做呢？
+
+首先，Git必须知道当前版本是哪个版本，在Git中，用HEAD表示当前版本，也就是最新的提交3628164...882e1e0（注意我的提交ID和你的肯定不一样），上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100。
+
+2.现在，我们要把当前版本“append GPL”回退到上一个版本“add distributed”，就可以使用git reset命令：
+
+$ git reset --hard HEAD^
+HEAD is now at ea34578 add distributed
+
+3.果然。
+
+还可以继续回退到上一个版本wrote a readme file，不过且慢，然我们用git log再看看现在版本库的状态：
+
+4.最新的那个版本append GPL已经看不到了！好比你从21世纪坐时光穿梭机来到了19世纪，想再回去已经回不去了，肿么办？
+
+办法其实还是有的，只要上面的命令行窗口还没有被关掉，你就可以顺着往上找啊找啊，找到那个append GPL的commit id是3628164...，于是就可以指定回到未来的某个版本：
+
+$ git reset --hard 3628164
+HEAD is now at 3628164 append GPL
+
+5.现在，你回退到了某个版本，关掉了电脑，第二天早上就后悔了，想恢复到新版本怎么办？找不到新版本的commit id怎么办？
+
+在Git中，总是有后悔药可以吃的。当你用$ git reset --hard HEAD^回退到add distributed版本时，再想恢复到append GPL，就必须找到append GPL的commit id。Git提供了一个命令git reflog用来记录你的每一次命令：
+
+$ git reflog
+
+
+第五步:工作区和暂存区
+ 仓库中的文件修改后  add后则被添加到暂存区， 然后commit 则添加到工作区
+
+第六步：管理修改
+ $git add readme.txt
+ $git commit -m "add distributed"
+
+
+第七步:撤销修改
+小结
+
+又到了小结时间。
+
+场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。
+
+场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令git reset HEAD file，就回到了场景1，第二步按场景1操作。
+
+场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送到远程库。
+
+第八步：删除文件
+$ rm test.txt
+
+
+第九步:分支
+
+      分为两种，主分支和分支。分支的作用可以有效解决，因为提交而影响他人工作的问题，即把数据的提交放在自己创建的分支上，最后才合并。
+     查看分支：git branch
+
+创建分支：git branch <name>
+
+切换分支：git checkout <name>
+
+创建+切换分支：git checkout -b <name>
+
+合并某分支到当前分支：git merge <name>
+
+删除分支：git branch -d <name>
+  
+
+
+
+
+实际操作:
+     首先别试图自己去git init
+
+     1.抓取分支  只能得到master
+        $ git clone git@github.com:michaelliao/learngit.git
+
+
+     2.创建分支
+       $ git checkout -b dev origin/dev  
+        
+       添加git add filename    提交 git commit -m "add distributed"
+       提交分支到远程
+       $ git push origin dev  
+       $ git push git@github.com:dushengwei/java.git master
+        $ git push -f git@github.com:dushengwei/java.git master 假如库中有文件,强推
+    
+      git add --all
+
+       常用：1.$ git branch  2.$ git checkout dev
+
+     错误：
+     你的小伙伴已经向origin/dev分支推送了他的提交，而碰巧你也对同样的文件作了修改，并试图推送。推送失败，因为你的小伙伴的最新提交和你试图推送的提交有冲突，解决办法也很简单，Git已经提示我们，先用$git pull把最新的提交从origin/dev抓下来，然后，在本地合并，解决冲突，再推送
+
+    多人协作的工作模式通常是这样：
+    1.首先，可以试图用git push origin branch-name推送自己的修改；
+    2.如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；    3.如果合并有冲突，则解决冲突，并在本地提交；
+    4.没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！  5.如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，    
+    用命令git branch --set-upstream branch-name origin/branch-name。
+
+
+    小结
+
+   查看远程库信息，使用git remote -v；
+
+   本地新建的分支如果不推送到远程，对其他人就是不可见的；
+
+   从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；
+
+   在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；
+   
+   建立本地分支和远程分支的关联，使用git branch --set-upstream branch-name origin/branch-name；
+
+   从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。
+
+这就是多人协作的工作模式，一旦熟悉了，就非常简单。
+        
+
+ 
+    指令集：
+    $ mkdir learngit
+    $ cd learngit
+    $ pwd  (用于显示当前目录)
+
+    $ git init (把空目录编程git仓库)
+    git status
+    git diff    顾名思义就是查看difference
+    git log     查看历史记录
+          append GPL，最近的一次
+           add distributed，上一次
+           wrote a readme file。最早的一次
+
+    $ git reset --hard HEAD^
+
+    $ git reset --hard 3628164
+    $git reflog 查看每一次指令
+
+    $ git checkout -- readme.txt 让这个文件回到最近一次git commit或git add时的状态
+    git reset HEAD file可以把暂存区的修改撤销掉（unstage），重新放回工作区：
+   
+    $ rm test.txt 删除文件
+    $ git checkout -- test.txt  把误删的文件恢复到最新版本
